@@ -51,7 +51,7 @@ router.get("/", function(req, res, next){
   }
   User.findAll(options).then(function(users){
     for (let i in users){
-      users[i] = users[i];
+      users[i] = users[i].responsify();
     }
     res.json(users);
   }).catch(next);
