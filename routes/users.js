@@ -1,32 +1,15 @@
 "use strict";
 const express = require("express")
+const jwt = require('jsonwebtoken');
 
 const models = require("../models");
 let router = express.Router();
 
 const User = models.User;
 
-router.post("/", function(req,res,next){
-  let lastname = req.body.lastname;
-  let firstname = req.body.firstname;
-  let email = req.body.email;
-  let pseudo = req.body.pseudo;
-  let password = req.body.password;
-  let phone = req.body.phone;
-  User.create({
-    lastname: lastname,
-    firstname: firstname,
-    email: email,
-    pseudo: pseudo,
-    password: password,
-    phone_number: phone
-  }).then(function(user){
-    res.json(user);
-  }).catch(next);
-});
 
-// Liste de ressource avec aps toutes les infos
-router.get("/", function(req, res, next){
+// get all users
+router.get("/",function(req, res, next){
   let l = parseInt(req.query.limit) || 20;
   let o = parseInt(req.query.offset) || 0;
   let options = {
@@ -53,28 +36,23 @@ router.get("/", function(req, res, next){
     for (let i in users){
       users[i] = users[i].responsify();
     }
+    res.status(200);
     res.json(users);
   }).catch(next);
 })
-//
-// // ON recupere UNE ressource
-// router.get("/:stud_id", function(req,res,next){
-//   Student.find({
-//     where: {
-//       id: req.params.stud_id
-//     },
-//     include: [
-//       models.School,
-//       models.Project
-//     ]
-//   }).then(function(stud){
-//     res.json(stud.responsify());
-//   }).catch(next)
-// })
-
-
-
-
+/*
+* get one user
+*/
+router.get("/:user_id", function(req,res,next){
+  User.find({
+    where: {
+      id: req.params.user_id
+    }
+  }).then(function(user){
+    res.status(200)
+    res.json(user);
+  }).catch(next)
+})
 
 
 module.exports = router;
