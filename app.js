@@ -4,8 +4,12 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-//Use for tokens
-var jwt    = require('jsonwebtoken');
+
+//Used for tokens
+var moment = require('moment');
+var constants = require('./constants');
+var jwt = require('jwt-simple');
+
 
 var index = require('./routes/index');
 var users = require('./routes/users');
@@ -15,6 +19,7 @@ var loans = require('./routes/loans');
 var models = require("./models");
 models.sequelize.sync();
 
+const User = models.User;
 var app = express();
 
 // view engine setup
@@ -34,7 +39,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 * Connect a user
 */
 app.post("/users/connect", function(req,res,next){
-  console.log("We pass in connextion");
   models.User.find({
     where: {
       pseudo: req.body.pseudo,
@@ -43,17 +47,21 @@ app.post("/users/connect", function(req,res,next){
   }).then(function(user){
     if(user){
 
-      // if user pseudo and password are good,
-      // we create a token
-      var token = jwt.sign({user}, "pocebleu",{
-        expiresIn : 60*60*24
-      });
+      // We set a token's duration's time of 1 day
+      var expires = moment().add('d', 1).valueOf();
+
+      //We encode the token here (using our secret)
+      var token = jwt.encode({
+        iss: user.id,
+        exp: expires
+      }, constants.secret);
+
       res.status(200).send({
         "result": 1,
         "message": "Athentification is a success",
+        "expires in": "1 day",
         "token": token
       })
-      res.status(200)
     }else{
       res.status(400).send({
         "result": 0,
@@ -89,19 +97,25 @@ app.post("/users", function(req,res,next){
 * middleware in order to Keep token security
 */
 app.use(function(req,res,next){
-  console.log("We pass in token middleware");
   let token =req.body.token || req.query.token;
   if (token){
     // verifies secret and checks exp
-    jwt.verify(token, "pocebleu", function(err, decoded) {
-      if (err) {
-        return res.json({ result: 0, message: 'Failed to authenticate token.' });
-      } else {
-        // if everything is good, save to request for use in other routes
-        req.decoded = decoded;
-        next();
-      }
-    });
+    try {
+       var decoded = jwt.decode(token, constants.secret);
+      //Is the token expired ?
+       if (decoded.exp <= Date.now()) {
+          res.end('Access token has expired', 400);
+        }
+
+        // We put the User object on every req, for every routes !
+        User.findById(decoded.iss).then(function(user) {
+          req.user = user;
+          next();
+        })
+
+     } catch (err) {
+       return next();
+     }
   }
   else{
     // if there is no token
