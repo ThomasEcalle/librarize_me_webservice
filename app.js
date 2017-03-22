@@ -5,7 +5,9 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
-//Used for tokens
+/******************************************
+*            Tokens utils                 *
+*******************************************/
 var moment = require('moment');
 var constants = require('./constants');
 var jwt = require('jwt-simple');
@@ -34,6 +36,10 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+
+/******************************************
+*      Without token security calls       *
+*******************************************/
 
 /*
 * Connect a user
@@ -74,7 +80,7 @@ app.post("/users/connect", function(req,res,next){
 /*
 * Create a user (inscription)
 */
-app.post("/users", function(req,res,next){
+app.post("/users/create", function(req,res,next){
   let lastname = req.body.lastname;
   let firstname = req.body.firstname;
   let email = req.body.email;
@@ -93,9 +99,16 @@ app.post("/users", function(req,res,next){
   }).catch(next);
 });
 
-/*
-* middleware in order to Keep token security
-*/
+/******************************************
+*      End of securityless calls           *
+*******************************************/
+
+
+
+
+/******************************************
+*      Security token check middleware    *
+*******************************************/
 app.use(function(req,res,next){
   let token =req.body.token || req.query.token;
   if (token){
@@ -144,12 +157,17 @@ app.use(function(req, res, next) {
 // error handler
 app.use(function(err, req, res, next) {
   // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
+  // res.locals.message = err.message;
+  // res.locals.error = req.app.get('env') === 'development' ? err : {};
 
   // render the error page
   res.status(err.status || 500);
-  res.render('error');
+  //res.render('error');
+  res.send({
+
+    result: 0,
+    message: "Error statut : " + err.status||500
+  })
 });
 
 module.exports = app;
