@@ -80,6 +80,7 @@ app.post("/users/connect", function(req,res,next){
 /*
 * Create a user (inscription)
 */
+
 app.post("/users/create", function(req,res,next){
   let lastname = req.body.lastname;
   let firstname = req.body.firstname;
@@ -87,6 +88,7 @@ app.post("/users/create", function(req,res,next){
   let pseudo = req.body.pseudo;
   let password = req.body.password;
   let phone = req.body.phone;
+
   models.User.create({
     lastname: lastname,
     firstname: firstname,
@@ -97,7 +99,75 @@ app.post("/users/create", function(req,res,next){
   }).then(function(user){
     res.json(user);
   }).catch(next);
+
+
+
+  // User.isValidName(firstname, function(isValidFirstName, error){
+  //   if (isValidFirstName){
+  //     User.isValidName(lastname, function(isValidLastName, error){
+  //       if (isValidLastName){
+  //         User.isValidEmail(email, function(isValidEmail, error){
+  //           if (isValidEmail){
+  //             User.isValidPhone(phone, function(isValidPhone, error){
+  //               if (isValidPhone){
+  //                 User.isValidPassword(password, function(isValidPassword, error){
+  //                   if (isValidPassword){
+  //                     User.isValidPseudo(pseudo, function(isValidPseudo, error){
+  //                       if (isValidPseudo){
+  //
+  //
+  //
+  //                       }
+  //                       else {
+  //                         res.status(200).send({
+  //                           result: 0,
+  //                           message: error
+  //                         })
+  //                       }
+  //                     })
+  //                   }
+  //                   else {
+  //                     res.status(200).send({
+  //                       result: 0,
+  //                       message: error
+  //                     })
+  //                   }
+  //                 })
+  //               }
+  //               else {
+  //                 res.status(200).send({
+  //                   result: 0,
+  //                   message: error
+  //                 })
+  //               }
+  //             })
+  //           }
+  //           else {
+  //             res.status(200).send({
+  //               result: 0,
+  //               message: error
+  //             })
+  //           }
+  //         })
+  //       }
+  //       else {
+  //         res.status(200).send({
+  //           result: 0,
+  //           message: error
+  //         })
+  //       }
+  //     })
+  //   }
+  //   else{
+  //     res.status(200).send({
+  //       result: 0,
+  //       message: error
+  //     })
+  //   }
+  // })
+
 });
+
 
 /******************************************
 *      End of securityless calls           *

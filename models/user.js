@@ -36,17 +36,7 @@ module.exports = function(sequelize, DataTypes) {
     classMethods: {
       associate: function (models) {
         User.belongsToMany(User, { as: "Friends", through: "friendship"});
-        }
-    },
-    //Methode pour l'instance d'un étudiant
-    instanceMethods: {
-      responsify: function(){
-        let result = {};
-        result.id = this.id;
-        result.pseudo = this.pseudo;
-        return result;
       },
-
       isValidPseudo: function(newPseudo, next){
         if(isNaN(newPseudo)){
           if(newPseudo.length >= 4){
@@ -115,7 +105,7 @@ module.exports = function(sequelize, DataTypes) {
       },
       isValidPhone: function(phone, next){
         if(isNaN(phone)){
-          next(false, "Please enter a number without characters");
+          next(false, "Please enter a phone number without characters");
         }
         else {
           next(true);
@@ -153,6 +143,17 @@ module.exports = function(sequelize, DataTypes) {
             }
         }
       }
+    },
+    //Methode pour l'instance d'un étudiant
+    instanceMethods: {
+      responsify: function(){
+        let result = {};
+        result.id = this.id;
+        result.pseudo = this.pseudo;
+        return result;
+      }
+
+
 
     }
   });

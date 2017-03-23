@@ -72,7 +72,7 @@ router.put("/update/pseudo/:user_pseudo", function(req,res,next){
   if (req.user){
     let user = req.user;
     let newPseudo =  req.params.user_pseudo
-    user.isValidPseudo(newPseudo, function(isValid, error){
+    User.isValidPseudo(newPseudo, function(isValid, error){
       if (isValid){
         user.update({
         pseudo: newPseudo
@@ -102,7 +102,7 @@ router.put("/update/email/:user_mail", function(req,res,next){
   if (req.user){
     let user = req.user;
     let newEmail =  req.params.user_mail
-    user.isValidEmail(newEmail, function(isValid, error){
+    User.isValidEmail(newEmail, function(isValid, error){
       if (isValid){
         user.update({
         email: newEmail
@@ -133,7 +133,7 @@ router.put("/update/firstname/:user_firstname", function(req,res,next){
   if (req.user){
     let user = req.user;
     let newFirstname =  req.params.user_firstname
-    user.isValidName(newFirstname, function(isValid, error){
+    User.isValidName(newFirstname, function(isValid, error){
       if (isValid){
         user.update({
         firstname: newFirstname
@@ -164,7 +164,7 @@ router.put("/update/lastname/:user_lastname", function(req,res,next){
   if (req.user){
     let user = req.user;
     let newLastname =  req.params.user_lastname
-    user.isValidName(newLastname, function(isValid, error){
+    User.isValidName(newLastname, function(isValid, error){
       if (isValid){
         user.update({
         lastname: newLastname
@@ -195,7 +195,7 @@ router.put("/update/phone/:user_phone", function(req,res,next){
   if (req.user){
     let user = req.user;
     let newPhone =  req.params.user_phone
-    user.isValidPhone(newPhone, function(isValid, error){
+    User.isValidPhone(newPhone, function(isValid, error){
       if (isValid){
         user.update({
         phone_number: newPhone
@@ -225,7 +225,7 @@ router.put("/update/password/:user_password", function(req,res,next){
   if (req.user){
     let user = req.user;
     let newPassword =  req.params.user_password
-    user.isValidPassword(newPassword, function(isValid, error){
+    User.isValidPassword(newPassword, function(isValid, error){
       if (isValid){
         user.update({
         password: newPassword
