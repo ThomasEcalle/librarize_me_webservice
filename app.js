@@ -89,82 +89,16 @@ app.post("/users/create", function(req,res,next){
   let password = req.body.password;
   let phone = req.body.phone;
 
-  models.User.create({
-    lastname: lastname,
-    firstname: firstname,
-    email: email,
-    pseudo: pseudo,
-    password: password,
-    phone_number: phone
-  }).then(function(user){
-    res.json(user);
-  }).catch(next);
-
-
-
-  // User.isValidName(firstname, function(isValidFirstName, error){
-  //   if (isValidFirstName){
-  //     User.isValidName(lastname, function(isValidLastName, error){
-  //       if (isValidLastName){
-  //         User.isValidEmail(email, function(isValidEmail, error){
-  //           if (isValidEmail){
-  //             User.isValidPhone(phone, function(isValidPhone, error){
-  //               if (isValidPhone){
-  //                 User.isValidPassword(password, function(isValidPassword, error){
-  //                   if (isValidPassword){
-  //                     User.isValidPseudo(pseudo, function(isValidPseudo, error){
-  //                       if (isValidPseudo){
-  //
-  //
-  //
-  //                       }
-  //                       else {
-  //                         res.status(200).send({
-  //                           result: 0,
-  //                           message: error
-  //                         })
-  //                       }
-  //                     })
-  //                   }
-  //                   else {
-  //                     res.status(200).send({
-  //                       result: 0,
-  //                       message: error
-  //                     })
-  //                   }
-  //                 })
-  //               }
-  //               else {
-  //                 res.status(200).send({
-  //                   result: 0,
-  //                   message: error
-  //                 })
-  //               }
-  //             })
-  //           }
-  //           else {
-  //             res.status(200).send({
-  //               result: 0,
-  //               message: error
-  //             })
-  //           }
-  //         })
-  //       }
-  //       else {
-  //         res.status(200).send({
-  //           result: 0,
-  //           message: error
-  //         })
-  //       }
-  //     })
-  //   }
-  //   else{
-  //     res.status(200).send({
-  //       result: 0,
-  //       message: error
-  //     })
-  //   }
-  // })
+    models.User.create({
+      lastname: lastname,
+      firstname: firstname,
+      email: email,
+      pseudo: pseudo,
+      password: password,
+      phone_number: phone
+    }).then(function(user){
+      res.json(user);
+    }).catch(next);
 
 });
 
@@ -227,17 +161,21 @@ app.use(function(req, res, next) {
 // error handler
 app.use(function(err, req, res, next) {
   // set locals, only providing error in development
-  // res.locals.message = err.message;
-  // res.locals.error = req.app.get('env') === 'development' ? err : {};
+  //res.locals.message = err.message;
+  //res.locals.error = req.app.get('env') === 'development' ? err : {};
 
   // render the error page
   res.status(err.status || 500);
-  //res.render('error');
-  res.send({
+  ///res.render('error');
+  let json = {result : 0};
+  let array = err.message.split(/\n/);
 
-    result: 0,
-    message: "Error statut : " + err.status||500
-  })
+  console.log("error message : " +err.message);
+  json.errors = [];
+  for (let e of array){
+    json.errors.push(e);
+  }
+  res.send(json);
 });
 
 module.exports = app;

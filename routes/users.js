@@ -72,24 +72,15 @@ router.put("/update/pseudo/:user_pseudo", function(req,res,next){
   if (req.user){
     let user = req.user;
     let newPseudo =  req.params.user_pseudo
-    User.isValidPseudo(newPseudo, function(isValid, error){
-      if (isValid){
-        user.update({
-        pseudo: newPseudo
-        }).then(function() {
-          res.status(200).send({
-            result: 1,
-            message: "Pseudo correctly updated"
-          })
-        })
-      }
-      else{
-        res.status(200).send({
-          result: 0,
-          message: error
-        })
-      }
-    });
+
+    user.update({
+    pseudo: newPseudo
+    }).then(function() {
+      res.status(200).send({
+        result: 1,
+        message: "Pseudo correctly updated"
+      })
+    }).catch(next);
 
   }
 })
@@ -102,25 +93,14 @@ router.put("/update/email/:user_mail", function(req,res,next){
   if (req.user){
     let user = req.user;
     let newEmail =  req.params.user_mail
-    User.isValidEmail(newEmail, function(isValid, error){
-      if (isValid){
-        user.update({
-        email: newEmail
-        }).then(function() {
-          res.status(200).send({
-            result: 1,
-            message: "Email correctly updated"
-          })
-        })
-      }
-      else{
-        res.status(200).send({
-          result: 0,
-          message: error
-        })
-      }
-    });
-
+    user.update({
+    email: newEmail
+    }).then(function() {
+      res.status(200).send({
+        result: 1,
+        message: "Email correctly updated"
+      })
+    }).catch(next);
   }
 })
 
@@ -133,24 +113,15 @@ router.put("/update/firstname/:user_firstname", function(req,res,next){
   if (req.user){
     let user = req.user;
     let newFirstname =  req.params.user_firstname
-    User.isValidName(newFirstname, function(isValid, error){
-      if (isValid){
-        user.update({
-        firstname: newFirstname
-        }).then(function() {
-          res.status(200).send({
-            result: 1,
-            message: "First name correctly updated"
-          })
-        })
-      }
-      else{
-        res.status(200).send({
-          result: 0,
-          message: error
-        })
-      }
-    });
+
+    user.update({
+    firstname: newFirstname
+    }).then(function() {
+      res.status(200).send({
+        result: 1,
+        message: "First name correctly updated"
+      })
+    }).catch(next);
 
   }
 })
@@ -164,24 +135,15 @@ router.put("/update/lastname/:user_lastname", function(req,res,next){
   if (req.user){
     let user = req.user;
     let newLastname =  req.params.user_lastname
-    User.isValidName(newLastname, function(isValid, error){
-      if (isValid){
-        user.update({
-        lastname: newLastname
-        }).then(function() {
-          res.status(200).send({
-            result: 1,
-            message: "Last name correctly updated"
-          })
-        })
-      }
-      else{
-        res.status(200).send({
-          result: 0,
-          message: error
-        })
-      }
-    });
+
+    user.update({
+    lastname: newLastname
+    }).then(function() {
+      res.status(200).send({
+        result: 1,
+        message: "Last name correctly updated"
+      })
+    }).catch(next);
 
   }
 })
@@ -195,24 +157,15 @@ router.put("/update/phone/:user_phone", function(req,res,next){
   if (req.user){
     let user = req.user;
     let newPhone =  req.params.user_phone
-    User.isValidPhone(newPhone, function(isValid, error){
-      if (isValid){
-        user.update({
-        phone_number: newPhone
-        }).then(function() {
-          res.status(200).send({
-            result: 1,
-            message: "Phone number correctly updated"
-          })
-        })
-      }
-      else{
-        res.status(200).send({
-          result: 0,
-          message: error
-        })
-      }
-    });
+
+    user.update({
+    phone_number: newPhone
+    }).then(function() {
+      res.status(200).send({
+        result: 1,
+        message: "Phone number correctly updated"
+      })
+    }).catch(next);
 
   }
 })
@@ -225,25 +178,15 @@ router.put("/update/password/:user_password", function(req,res,next){
   if (req.user){
     let user = req.user;
     let newPassword =  req.params.user_password
-    User.isValidPassword(newPassword, function(isValid, error){
-      if (isValid){
-        user.update({
-        password: newPassword
-        }).then(function() {
-          res.status(200).send({
-            result: 1,
-            message: "Password correctly updated"
-          })
-        })
-      }
-      else{
-        console.log("okokokkok");
-        res.status(200).send({
-          result: 0,
-          message: error
-        })
-      }
-    });
+
+    user.update({
+    password: newPassword
+    }).then(function() {
+      res.status(200).send({
+        result: 1,
+        message: "Password correctly updated"
+      })
+    }).catch(next);
 
   }
 })
