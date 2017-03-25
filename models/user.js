@@ -39,10 +39,10 @@ module.exports = function(sequelize, DataTypes) {
      pseudo: {
          type: DataTypes.STRING,
          allowNull: false,
-         unique: {
-              args: true,
-              msg: 'pseudo already exist !'
-          }
+        //  unique: {
+        //       args: true,
+        //       msg: 'pseudo already exist !'
+        //   }
      },
      password: {
        type: DataTypes.STRING,
@@ -72,12 +72,15 @@ module.exports = function(sequelize, DataTypes) {
         User.belongsToMany(User, { as: "Friends", through: "friendship"});
       }
     },
-    //Methode pour l'instance d'un étudiant
+    //Methode pour l'instance d'un Utilisateur
     instanceMethods: {
       responsify: function(){
         let result = {};
         result.id = this.id;
         result.pseudo = this.pseudo;
+        if (this.hasFriend){
+          result.friends = this.Friends;
+        }
         return result;
       }
     }

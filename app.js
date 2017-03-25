@@ -121,17 +121,19 @@ app.use(function(req,res,next){
        var decoded = jwt.decode(token, constants.secret);
       //Is the token expired ?
        if (decoded.exp <= Date.now()) {
-          res.end('Access token has expired', 400);
+          return res.end('Access token has expired', 400);
         }
 
         // We put the User object on every req, for every routes !
         User.findById(decoded.iss).then(function(user) {
+          console.log(user);
           req.user = user;
-          next();
+          return next();
         })
 
      } catch (err) {
-       return next();
+       err.message = "Bad token"
+       return next(err);
      }
   }
   else{
@@ -167,6 +169,7 @@ app.use(function(err, req, res, next) {
   // render the error page
   res.status(err.status || 500);
   ///res.render('error');
+
   let json = {result : 0};
   let array = err.message.split(/\n/);
 

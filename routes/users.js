@@ -10,6 +10,7 @@ const User = models.User;
 /******************************************
 *             get all Users               *
 *******************************************/
+// correspond to the URL /users
 router.get("/",function(req, res, next){
   let l = parseInt(req.query.limit) || 20;
   let o = parseInt(req.query.offset) || 0;
@@ -38,7 +39,7 @@ router.get("/",function(req, res, next){
       users[i] = users[i].responsify();
     }
     res.status(200);
-    res.json(users);
+    return res.json(users);
   }).catch(next);
 })
 
@@ -47,6 +48,7 @@ router.get("/",function(req, res, next){
 /******************************************
 *             get one User                *
 *******************************************/
+// correspond to the URL /users/3 for exemple
 router.get("/:user_id", function(req,res,next){
   User.find({
     where: {
@@ -57,7 +59,7 @@ router.get("/:user_id", function(req,res,next){
       res.json(user);
     }
     res.status(200)
-    res.json({
+    return res.json({
       "message": "No user found"
     });
   }).catch(next)
@@ -76,7 +78,7 @@ router.put("/update/pseudo/:user_pseudo", function(req,res,next){
     user.update({
     pseudo: newPseudo
     }).then(function() {
-      res.status(200).send({
+      return res.status(200).send({
         result: 1,
         message: "Pseudo correctly updated"
       })
@@ -96,7 +98,7 @@ router.put("/update/email/:user_mail", function(req,res,next){
     user.update({
     email: newEmail
     }).then(function() {
-      res.status(200).send({
+      return res.status(200).send({
         result: 1,
         message: "Email correctly updated"
       })
@@ -117,7 +119,7 @@ router.put("/update/firstname/:user_firstname", function(req,res,next){
     user.update({
     firstname: newFirstname
     }).then(function() {
-      res.status(200).send({
+      return res.status(200).send({
         result: 1,
         message: "First name correctly updated"
       })
@@ -139,7 +141,7 @@ router.put("/update/lastname/:user_lastname", function(req,res,next){
     user.update({
     lastname: newLastname
     }).then(function() {
-      res.status(200).send({
+      return res.status(200).send({
         result: 1,
         message: "Last name correctly updated"
       })
@@ -161,7 +163,7 @@ router.put("/update/phone/:user_phone", function(req,res,next){
     user.update({
     phone_number: newPhone
     }).then(function() {
-      res.status(200).send({
+      return res.status(200).send({
         result: 1,
         message: "Phone number correctly updated"
       })
@@ -182,7 +184,7 @@ router.put("/update/password/:user_password", function(req,res,next){
     user.update({
     password: newPassword
     }).then(function() {
-      res.status(200).send({
+      return res.status(200).send({
         result: 1,
         message: "Password correctly updated"
       })
@@ -196,13 +198,10 @@ router.put("/update/password/:user_password", function(req,res,next){
 *                                      FRIEND ZONE                                          *
 ********************************************************************************************/
 
-
-
-
 /******************************************
 *               Add friend                *
 *******************************************/
-router.post("/add/friend/:friend_id", function(req, res, next){
+router.post("/friends/add/:friend_id", function(req, res, next){
   if (req.user){
     let answer = {};
     let user = req.user;
@@ -214,14 +213,14 @@ router.post("/add/friend/:friend_id", function(req, res, next){
     }).then(function(friend){
       if (friend){
         if(user.id == friend.id){
-          res.json({
+          return res.json({
             result: 0,
             message: "You can't add yourself as a friend... it is a little bit ackward !"
           })
         }
         else {
           user.addFriend(friend).then(function(){
-            res.send({
+            return res.send({
               result: 1,
               message: "Friend correctly added"
             })
@@ -229,17 +228,32 @@ router.post("/add/friend/:friend_id", function(req, res, next){
         }
       }
       else {
-        res.json({
+        return res.json({
           result: 0,
           message: "You try to add as a friend a user that does not exist"
         })
       }
 
-    })
+    }).catch(next);
   }
 })
 
 
+/******************************************
+*               get friends               *
+*******************************************/
+router.get("/friends/all", function(req, res, next){
+  if(req.user){
+    let user = req.user;
+    user.getFriends().then(function(friends){
+      for (let i in friends){
+        friends[i] = friends[i].responsify();
+      }
+      res.status(200);
+      return res.json(friends);
+    }).catch(next);
 
+  }
+})
 
 module.exports = router;
