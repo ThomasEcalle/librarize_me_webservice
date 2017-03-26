@@ -69,7 +69,8 @@ module.exports = function(sequelize, DataTypes) {
   freezeTableName: true,
     classMethods: {
       associate: function (models) {
-        User.belongsToMany(User, { as: "Friends", through: "friendship"});
+        User.belongsToMany(models.User, {as: 'Friends', through: models.Friendship});
+        //User.belongsToMany(User, { as: "Friends", through: "friendship"});
       }
     },
     //Methode pour l'instance d'un Utilisateur
@@ -78,9 +79,6 @@ module.exports = function(sequelize, DataTypes) {
         let result = {};
         result.id = this.id;
         result.pseudo = this.pseudo;
-        if (this.hasFriend){
-          result.friends = this.Friends;
-        }
         return result;
       }
     }

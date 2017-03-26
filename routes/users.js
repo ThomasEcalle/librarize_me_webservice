@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 const models = require("../models");
 let router = express.Router();
 const User = models.User;
+const Friendship = models.Friendship;
 
 
 /******************************************
@@ -219,12 +220,33 @@ router.post("/friends/add/:friend_id", function(req, res, next){
           })
         }
         else {
-          user.addFriend(friend).then(function(){
-            return res.send({
-              result: 1,
-              message: "Friend correctly added"
-            })
-          })
+          Friendship.find({
+            where: {
+              $or: [{friend_id: user.id,
+                      $and: {user_id: friend.id} }
+                  , {user_id: user.id,
+                      $and: {friend_id: friend.id}}]
+            }
+          }).then(function(relation){
+            if(relation){
+              relation.update({
+              accepted: 1
+              }).then(function() {
+                return res.status(200).send({
+                  result: 1,
+                  message: "You accepted friendship"
+                })
+              }).catch(next);
+            }else{
+              user.addFriend(friend).then(function(){
+                return res.send({
+                  result: 1,
+                  message: "Friend correctly added"
+                })
+              })
+            }
+          }).catch(next);
+
         }
       }
       else {
@@ -245,13 +267,42 @@ router.post("/friends/add/:friend_id", function(req, res, next){
 router.get("/friends/all", function(req, res, next){
   if(req.user){
     let user = req.user;
-    user.getFriends().then(function(friends){
-      for (let i in friends){
-        friends[i] = friends[i].responsify();
+
+    Friendship.findAll({
+      where:
+      {
+        $or: [{user_id: user.id}, {friend_id: user.id}],
+        accepted: 1
       }
-      res.status(200);
-      return res.json(friends);
+    }).then(function(friendships){
+      let result = [];
+      for (let i in friendships){
+        if (friendships[i].user_id == user.id){
+          result.push(friendships[i].friend_id);
+        }else {
+          result.push(friendships[i].user_id);
+        }
+      }
+      res.status(200).send(result);
     }).catch(next);
+
+    // user.getFriends({
+    //   where: {
+    //     accepted: true
+    //   }
+    // })
+    // .then(function(possibleFriends){
+    //   let realFriends = [];
+    //   for (let friend of possibleFriends){
+    //
+    //     console.log(friend.accepted);
+    //       console.log("okokokok");
+    //       realFriends.push(friend.responsify());
+    //
+    //   }
+    //   res.status(200);
+    //   return res.json(realFriends);
+    // }).catch(next);
 
   }
 })
