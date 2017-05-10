@@ -1,5 +1,6 @@
 "use strict";
 
 module.exports = {
-  'secret': 'pocebleu'
+  'secret': 'pocebleu',
+  'tokensBlackList' : []
 };

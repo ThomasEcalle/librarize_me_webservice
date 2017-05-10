@@ -3,6 +3,7 @@ const express = require("express")
 const jwt = require('jsonwebtoken');
 
 const models = require("../models");
+const constants = require('../constants');
 let router = express.Router();
 const User = models.User;
 const Friendship = models.Friendship;
@@ -190,10 +191,28 @@ router.put("/update/password/:user_password", function(req,res,next){
         message: "Password correctly updated"
       })
     }).catch(next);
-
   }
 })
 
+
+/******************************************
+*             Deconnect User              *
+*******************************************/
+router.put("/deconnect", function(req,res,next){
+  if (req.user){
+    let user = req.user;
+
+    user.update({
+    token_available: null
+    }).then(function() {
+      return res.status(200).send({
+        result: 1,
+        message: "Successfully deconnected"
+      })
+    }).catch(next);
+
+  }
+})
 
 /********************************************************************************************
 *                                      FRIEND ZONE                                          *
@@ -214,7 +233,7 @@ router.post("/friends/add/:friend_id", function(req, res, next){
     }).then(function(friend){
       if (friend){
         if(user.id == friend.id){
-          return res.json({
+          return res.status(400).json({
             result: 0,
             message: "You can't add yourself as a friend... it is a little bit ackward !"
           })
@@ -222,11 +241,9 @@ router.post("/friends/add/:friend_id", function(req, res, next){
         else {
           Friendship.find({
             where: {
-              $or: [{friend_id: user.id,
-                      $and: {user_id: friend.id} }
-                  , {user_id: user.id,
-                      $and: {friend_id: friend.id}}]
-            }
+              friend_id: user.id,
+                  $and: {user_id: friend.id}
+                }
           }).then(function(relation){
             if(relation){
               relation.update({

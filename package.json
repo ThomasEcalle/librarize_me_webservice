@@ -11,6 +11,7 @@
     "debug": "~2.6.0",
     "email-validator": "^1.0.7",
     "express": "~4.14.1",
+    "express-jwt-blacklist": "^1.1.0",
     "jade": "~1.11.0",
     "jsonwebtoken": "^7.3.0",
     "jwt-simple": "^0.5.1",
