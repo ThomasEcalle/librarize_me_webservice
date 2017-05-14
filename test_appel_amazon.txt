@@ -1,0 +1,4 @@
+GET
+webservices.amazon.com
+/onca/xml
+AWSAccessKeyId=AKIAJ75EIJQZQPR7DQHA&AssociateTag=thomasecalle-21&IdType=ISBN&ItemId=076243631X&Operation=ItemLookup&ResponseGroup=Large&Service=AWSECommerceService&Timestamp=2017-05-10T21%3A47%3A40Z
