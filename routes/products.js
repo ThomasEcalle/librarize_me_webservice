@@ -15,6 +15,137 @@ const client = amazon.createClient({
 });
 
 /******************************************
+*             Search a book               * // ONLY "Books" FOR NOW, TO SEE IF WE NEED TO INCLUDE MORE
+*******************************************/
+
+router.get("/amazon/books/:str", function(req, res, next){
+    if(req.user){
+        client.itemSearch({ 
+            keywords: req.params.str,
+            searchIndex: 'Books'
+        }).catch(function(err){
+            res.json(err);
+        }).then(function(results){
+            let result = [];
+            for(let r in results){
+                let attributes = results[r].ItemAttributes[0];
+                result.push({
+                    ASIN: results[r].ASIN ? results[r].ASIN.join(';') : null,
+                    name: attributes.Title ? attributes.Title.join(';') : null,
+                    editor: attributes.Publisher ? attributes.Publisher.join(';') : 
+                        (attributes.Label ? attributes.Label.join(';') : null),
+                    date: attributes.ReleaseDate ? attributes.ReleaseDate.join(';') : 
+                        (attributes.PublicationDate ? attributes.PublicationDate.join(';') : null)
+                });
+            }
+            res.status(200).json(result);
+        });
+    }
+})
+
+/******************************************
+*             Search a film               * // ONLY "DVD" FOR NOW, TO SEE IF WE NEED TO INCLUDE MORE
+*******************************************/
+
+router.get("/amazon/films/:str", function(req, res, next){
+    if(req.user){
+        client.itemSearch({ 
+            keywords: req.params.str,
+            searchIndex: 'DVD'
+        }).catch(function(err){
+            res.json(err);
+        }).then(function(results){
+            let result = [];
+            for(let r in results){
+                let attributes = results[r].ItemAttributes[0];
+                result.push({
+                    ASIN: results[r].ASIN ? results[r].ASIN.join(';') : null,
+                    name: attributes.Title ? attributes.Title.join(';') : null,
+                    genre: attributes.Genre ? attributes.Genre.join(';') : null,
+                    date: attributes.ReleaseDate ? attributes.ReleaseDate.join(';') : 
+                        (attributes.PublicationDate ? attributes.PublicationDate.join(';') : null)
+                });
+            }
+            res.status(200).json(result);
+        });
+    }
+})
+
+/******************************************
+*             Search a music              * ONLY "Music" FOR NOW, TO SEE IF WE NEED TO INCLUDE MORE
+*******************************************/
+
+router.get("/amazon/music/:str", function(req, res, next){
+    if(req.user){
+        client.itemSearch({ 
+            keywords: req.params.str,
+            searchIndex: 'Music'
+        }).catch(function(err){
+            res.json(err);
+        }).then(function(results){
+            let result = [];
+            for(let r in results){
+                let attributes = results[r].ItemAttributes[0];
+                result.push({
+                    ASIN: results[r].ASIN ? results[r].ASIN.join(';') : null,
+                    name: attributes.Title ? attributes.Title.join(';') : null,
+                    artist: attributes.Artist ? attributes.Artist.join(';') : null,
+                    date: attributes.ReleaseDate ? attributes.ReleaseDate.join(';') : 
+                        (attributes.PublicationDate ? attributes.PublicationDate.join(';') : null)
+                });
+            }
+            res.status(200).json(result);
+        });
+    }
+})
+
+/******************************************
+*           Search a video game           * ONLY "VideoGames" FOR NOW, TO SEE IF WE NEED TO INCLUDE MORE
+*******************************************/
+
+router.get("/amazon/game/:str", function(req, res, next){
+    if(req.user){
+        client.itemSearch({ 
+            keywords: req.params.str,
+            searchIndex: 'VideoGames'
+        }).catch(function(err){
+            res.json(err);
+        }).then(function(results){
+            let result = [];
+            for(let r in results){
+                let attributes = results[r].ItemAttributes[0];
+                result.push({
+                    ASIN: results[r].ASIN ? results[r].ASIN.join(';') : null,
+                    name: attributes.Title ? attributes.Title.join(';') : null,
+                    genre: attributes.Genre ? attributes.Genre.join(';') : 
+                        (attributes.HardwarePlatform ? attributes.HardwarePlatform.join(';') : null),
+                    date: attributes.ReleaseDate ? attributes.ReleaseDate.join(';') : 
+                        (attributes.PublicationDate ? attributes.PublicationDate.join(';') : null)
+                });
+            }
+            res.status(200).json(result);
+        });
+    }
+})
+
+/******************************************
+*       Get informations of a product     *
+*******************************************/
+
+router.get("/amazon/:code/:codetype", function(req, res, next){
+    if(req.user){
+        client.itemLookup({
+            idType: req.params.codetype,
+            itemId: req.params.code
+        }).catch(function(err){
+            res.json(err);
+        }).then(function(result){
+            res.json(result);
+        });
+    }
+})
+
+/******************************************
 *             Create product              * -------- PROBLEM WITH PRICE BECAUSE DOUBLE AND MULTIPLE CURRENCIES POSSIBLE !!<!!>!!
 *******************************************/
 
@@ -35,6 +166,7 @@ router.post("/create/:code/:codetype", function(req, res, next){
                 case "CD":
                 case "Hardcover":    
                 case "Paperback":
+                case "Video Game":
                     getJSON(attributes, req, function(){
                         res.status(200).json({
                             result: 1,
@@ -63,10 +195,10 @@ function getJSON(attributes, req, next, error){
         (attributes.PublicationDate ? attributes.PublicationDate.join(';') : null); 
     let price = attributes.ListPrice ?
         (attributes.ListPrice[0].FormattedPrice ? attributes.ListPrice[0].FormattedPrice.join(';') : null) : null;
-    let name = attributes.Title ? attributes.Title.join(';') : null;
+    let name = attributes.Title ? attributes.Title.join(';') + (attributes.OperatingSystem ? ';' + attributes.OperatingSystem.join(';') : "") : null;
     let editor = attributes.Publisher ? attributes.Publisher.join(';') : 
         (attributes.Label ? attributes.Label.join(';') : null);
-    let genre = null;
+    let genre = attributes.Genre ? attributes.Genre.join(';') : null;
     let actors = attributes.Actor ? attributes.Actor.join(';') : null;
     let autor = attributes.Author ? attributes.Author.join(';') : 
         (attributes.Artist ? attributes.Artist.join(';') : 
