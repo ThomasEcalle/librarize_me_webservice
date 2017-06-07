@@ -15,12 +15,8 @@ const Loan = models.Loan;
 *             Make a loan                 * 
 *******************************************/
 
-router.post('/create/:code/:user_id', function(req, res, next){
-    if(req.user){
-        
+function checkDate(start, end, res, next){
         /* VERIFICATION OF THE DATE VALIDITY IN THE BODY */
-        let start = req.body.start_date ? new Date(req.body.start_date) : new Date();
-        let end = req.body.end_date ? new Date(req.body.end_date) : null;
         if(start != null && start.toString() == "Invalid Date"){
             res.status(400).json({
                     result: 0,
@@ -45,81 +41,92 @@ router.post('/create/:code/:user_id', function(req, res, next){
                     message: "End or start date cannot be before today"
                 });
         }
-        
-        /* VERIFICATION IF THE USER ID IS NOT YOURSELF */
-        if(req.params.user_id == req.user.id){
-            res.status(400).json({
-                    result: 0,
-                    message: "You can't make a loan to yourself."
-                });
+        else{
+            next();
         }
+}
+
+function checkIfDateMatch(start, end, start_bdd, end_bdd, next, error){
+    if(end_bdd == null){
+        if(end == null) return false;
+        else if(end >= start_bdd) return false;
+    }
+    else{
+        if(end == null && start <= start_bdd){
+             return false;
+        }
+        else{
+            if(start <= start_bdd && end >= end_bdd) return false;
+            else if(start >= start_bdd && start <= end_bdd) return false;
+            else if(end >= start_bdd && end <= end_bdd) return false;
+        }
+    }
+    return true;
+}
+
+router.post('/create/:code/:user_id', function(req, res, next){
+    if(req.user){
+
+        let start = req.body.start_date ? new Date(req.body.start_date) : new Date();
+        let end = req.body.end_date ? new Date(req.body.end_date) : null;
+        checkDate(start, end, res, function(){
         
-        /* VERIFICATION IF THE PRODUCT ID EXISTS */
-        Product.findOne({
-            where:
-            {
-                id: req.params.code,
-                deleted_at: null
-            }
-        }).catch(function(err){
-            res.json(err);
-        }).then(function(result){
-            if(!result){
+            /* VERIFICATION IF THE USER ID IS NOT YOURSELF */
+            if(req.params.user_id == req.user.id){
                 res.status(400).json({
-                    result: 0,
-                    message: "No products match this id."
-                });
+                        result: 0,
+                        message: "You can't make a loan to yourself."
+                    });
             }
-            
-            /* VERIFICATION IF THE PRODUCT BELONG TO THE ACTIVE USER */
-            else if(result.user_id != req.user.id){
-                res.status(400).json({
-                    result: 0,
-                    message: "The product does not belong to the active user."
-                });
-            }
-            
-            /* VERIFICATION IF THE USER IS FRIEND WITH THE ACTIVE USER */
-            Friendship.findOne({
-                user_id: req.user.id,
-                friend_id: req.params.user_id
+
+            /* VERIFICATION IF THE PRODUCT ID EXISTS */
+            Product.findOne({
+                where:
+                {
+                    id: req.params.code,
+                    deleted_at: null
+                }
             }).catch(function(err){
                 res.json(err);
             }).then(function(result){
                 if(!result){
                     res.status(400).json({
                         result: 0,
-                        message: "The user is not friend with the loaner."
+                        message: "No products match this id."
                     });
                 }
-                
-                /* VERIFICATION IF THE PRODUCT ISN'T ALREADY IN LOAN */
-                Loan.findOne({
-                    product_id: req.params.code,
-                    deleted_at: null
+
+                /* VERIFICATION IF THE PRODUCT BELONG TO THE ACTIVE USER */
+                else if(result.user_id != req.user.id){
+                    res.status(400).json({
+                        result: 0,
+                        message: "The product does not belong to the active user."
+                    });
+                }
+
+                /* VERIFICATION IF THE USER IS FRIEND WITH THE ACTIVE USER */
+                Friendship.findOne({
+                    user_id: req.user.id,
+                    friend_id: req.params.user_id
                 }).catch(function(err){
                     res.json(err);
                 }).then(function(result){
-                    let date = new Date();
-                    for(let i in result){
-                        res.json("a voir ici");
-                        /*
-                        if(start >= result[i].start_date && (result[i].end_date ? (start <= result[i].end_date) : true)){
-                             res.status(400).json({
-                                result: 0,
-                                message: "The product is already in a loan at this date."
-                            });
-                        }
-                        else if((end) || (end >= result[i].start_date && (result[i].end_date ? (end <= result[i].end_date) : true)))
-                        if(result[i].end_date != null && ( result[i].end_date > start)){
-                            res.status(400).json({
-                                result: 0,
-                                message: "The product is already in a loan at this date."
-                            });
-                        }
-                        else{
-                            /* CREATION OF THE LOAN */
-                            models.Loan.create({
+                    if(!result){
+                        res.status(400).json({
+                            result: 0,
+                            message: "The user is not friend with the loaner."
+                        });
+                    }
+
+                    /* VERIFICATION IF THE PRODUCT ISN'T ALREADY IN LOAN */
+                    Loan.findOne({
+                        product_id: req.params.code,
+                        deleted_at: null
+                    }).catch(function(err){
+                        res.json(err);
+                    }).then(function(result){
+                        if(result == null || checkIfDateMatch(start, end, result.start_date, result.end_date)){
+                             models.Loan.create({
                                 product_id: req.params.code,
                                 user_id: req.params.user_id,
                                 start_date: start,
@@ -130,14 +137,20 @@ router.post('/create/:code/:user_id', function(req, res, next){
                                  res.status(200).json({
                                     result: 1,
                                     message: "The loan has been made."
+                                    });
                                 });
-                            }); 
-                        //}
-                    }
-                });
-            })
+                        }
+                        else{
+                            res.status(400).json({
+                                    result: 0,
+                                    message: "The product is already or maybe already in loan at this time. Try with mentioning a end date for the loan."
+                            });
+                        }
+                    });
+                })
+            });
         });
     }
 })
-    
+
 module.exports = router;
