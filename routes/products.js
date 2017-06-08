@@ -24,7 +24,7 @@ router.get("/amazon/books/:str", function(req, res, next){
             keywords: req.params.str,
             searchIndex: 'Books'
         }).catch(function(err){
-            res.json(err);
+            return res.json(err);
         }).then(function(results){
             let result = [];
             for(let r in results){
@@ -38,7 +38,7 @@ router.get("/amazon/books/:str", function(req, res, next){
                         (attributes.PublicationDate ? attributes.PublicationDate.join(';') : null)
                 });
             }
-            res.status(200).json(result);
+            return res.status(200).json(result);
         });
     }
 })
@@ -53,7 +53,7 @@ router.get("/amazon/films/:str", function(req, res, next){
             keywords: req.params.str,
             searchIndex: 'DVD'
         }).catch(function(err){
-            res.json(err);
+            return res.json(err);
         }).then(function(results){
             let result = [];
             for(let r in results){
@@ -66,7 +66,7 @@ router.get("/amazon/films/:str", function(req, res, next){
                         (attributes.PublicationDate ? attributes.PublicationDate.join(';') : null)
                 });
             }
-            res.status(200).json(result);
+            return res.status(200).json(result);
         });
     }
 })
@@ -81,7 +81,7 @@ router.get("/amazon/music/:str", function(req, res, next){
             keywords: req.params.str,
             searchIndex: 'Music'
         }).catch(function(err){
-            res.json(err);
+            return res.json(err);
         }).then(function(results){
             let result = [];
             for(let r in results){
@@ -94,7 +94,7 @@ router.get("/amazon/music/:str", function(req, res, next){
                         (attributes.PublicationDate ? attributes.PublicationDate.join(';') : null)
                 });
             }
-            res.status(200).json(result);
+            return res.status(200).json(result);
         });
     }
 })
@@ -109,7 +109,7 @@ router.get("/amazon/game/:str", function(req, res, next){
             keywords: req.params.str,
             searchIndex: 'VideoGames'
         }).catch(function(err){
-            res.json(err);
+            return res.json(err);
         }).then(function(results){
             let result = [];
             for(let r in results){
@@ -123,7 +123,7 @@ router.get("/amazon/game/:str", function(req, res, next){
                         (attributes.PublicationDate ? attributes.PublicationDate.join(';') : null)
                 });
             }
-            res.status(200).json(result);
+            return res.status(200).json(result);
         });
     }
 })
@@ -138,9 +138,9 @@ router.get("/amazon/:code/:codetype", function(req, res, next){
             idType: req.params.codetype,
             itemId: req.params.code
         }).catch(function(err){
-            res.json(err);
+            return res.json(err);
         }).then(function(result){
-            res.json(result);
+            return res.json(result);
         });
     }
 })
@@ -155,7 +155,7 @@ router.post("/create/:code/:codetype", function(req, res, next){
           idType: req.params.codetype,
           itemId: req.params.code
         }).catch(function(err) {
-            res.json(err);
+            return res.json(err);
         }).then(function(results){
             let attributes = results[0].ItemAttributes[0];
             switch(attributes.Binding.join(';')){ 
@@ -168,19 +168,19 @@ router.post("/create/:code/:codetype", function(req, res, next){
                 case "Paperback":
                 case "Video Game":
                     getJSON(attributes, req, function(){
-                        res.status(200).json({
+                        return res.status(200).json({
                             result: 1,
                             message: "The product has been well added to the database."
                         });
                     }, function(){
-                        res.status(400).json({
+                        return res.status(400).json({
                             result: 0,
                             message: "Parsing impossible from amazon result to database."
                         })
                     });
                     break;
                 default: 
-                    res.status(400).json({
+                    return res.status(400).json({
                         result: 0,
                         message: "The item has been find but doesn't belong to the possible categories."
                     });
@@ -232,16 +232,16 @@ router.put("/delete/:product_id", function(req, res, next){
             }
         }).then(function(resp){
             if(resp == 1)
-                res.status(200).json({
+                return res.status(200).json({
                     result: 1,
                     message: "The product has been well deleted"
                 });
             else if(resp == 0)
-                res.status(400).json({
+                return res.status(400).json({
                     result: 0,
                     message: "The product hasn't been deleted, maybe the id does not exists or the product doesn't belong to the active user."
                 });
-            res.json(resp);
+            return res.json(resp);
         }).catch(next);
     }
 });
@@ -262,7 +262,7 @@ router.get("/search/", function(req, res, next){
           for (let i in products){
             result.push({ id: products[i].id, bar_code: products[i].bar_code, user_id: products[i].user_id });
           }
-          res.status(200).send(result);
+          return res.status(200).send(result);
         }).catch(next);
     }
 
@@ -280,8 +280,8 @@ router.get("/search/:id", function(req, res, next){
             id: req.params.id
           }
         }).then(function(product){
-            if(product) res.status(200).send(product);
-            res.status(400).json({
+            if(product) return res.status(200).send(product);
+            return res.status(400).json({
                 result: 0,
                 message: "ID not found."
             });
@@ -306,7 +306,7 @@ router.get("/search/user/active", function(req, res, next){
           for (let i in products){
             result.push({ id: products[i].id, bar_code: products[i].bar_code, user_id: products[i].user_id });
           }
-          res.status(200).send(result);
+          return res.status(200).send(result);
         }).catch(next);
     }
 
@@ -329,7 +329,7 @@ router.get("/search/user/:user_id", function(req, res, next){
           for (let i in products){
             result.push({ id: products[i].id, bar_code: products[i].bar_code, user_id: products[i].user_id });
           }
-          res.status(200).send(result);
+          return res.status(200).send(result);
         }).catch(next);
     }
 
