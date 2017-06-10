@@ -9,8 +9,8 @@ const User = models.User;
 const Product = models.Product;
 const Friendship = models.Friendship;
 const client = amazon.createClient({
-  awsId: "",
-  awsSecret: "",
+  awsId: "AKIAIWPUBWY7U6ZRQDEA",
+  awsSecret: "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",
   awsTag: "node02-20"
 });
 
@@ -20,7 +20,7 @@ const client = amazon.createClient({
 
 router.get("/amazon/books/:str", function(req, res, next){
     if(req.user){
-        client.itemSearch({ 
+        client.itemSearch({
             keywords: req.params.str,
             searchIndex: 'Books'
         }).catch(function(err){
@@ -32,9 +32,9 @@ router.get("/amazon/books/:str", function(req, res, next){
                 result.push({
                     ASIN: results[r].ASIN ? results[r].ASIN.join(';') : null,
                     name: attributes.Title ? attributes.Title.join(';') : null,
-                    editor: attributes.Publisher ? attributes.Publisher.join(';') : 
+                    editor: attributes.Publisher ? attributes.Publisher.join(';') :
                         (attributes.Label ? attributes.Label.join(';') : null),
-                    date: attributes.ReleaseDate ? attributes.ReleaseDate.join(';') : 
+                    date: attributes.ReleaseDate ? attributes.ReleaseDate.join(';') :
                         (attributes.PublicationDate ? attributes.PublicationDate.join(';') : null)
                 });
             }
@@ -49,7 +49,7 @@ router.get("/amazon/books/:str", function(req, res, next){
 
 router.get("/amazon/films/:str", function(req, res, next){
     if(req.user){
-        client.itemSearch({ 
+        client.itemSearch({
             keywords: req.params.str,
             searchIndex: 'DVD'
         }).catch(function(err){
@@ -58,11 +58,12 @@ router.get("/amazon/films/:str", function(req, res, next){
             let result = [];
             for(let r in results){
                 let attributes = results[r].ItemAttributes[0];
+
                 result.push({
                     ASIN: results[r].ASIN ? results[r].ASIN.join(';') : null,
                     name: attributes.Title ? attributes.Title.join(';') : null,
                     genre: attributes.Genre ? attributes.Genre.join(';') : null,
-                    date: attributes.ReleaseDate ? attributes.ReleaseDate.join(';') : 
+                    date: attributes.ReleaseDate ? attributes.ReleaseDate.join(';') :
                         (attributes.PublicationDate ? attributes.PublicationDate.join(';') : null)
                 });
             }
@@ -77,7 +78,7 @@ router.get("/amazon/films/:str", function(req, res, next){
 
 router.get("/amazon/music/:str", function(req, res, next){
     if(req.user){
-        client.itemSearch({ 
+        client.itemSearch({
             keywords: req.params.str,
             searchIndex: 'Music'
         }).catch(function(err){
@@ -90,7 +91,7 @@ router.get("/amazon/music/:str", function(req, res, next){
                     ASIN: results[r].ASIN ? results[r].ASIN.join(';') : null,
                     name: attributes.Title ? attributes.Title.join(';') : null,
                     artist: attributes.Artist ? attributes.Artist.join(';') : null,
-                    date: attributes.ReleaseDate ? attributes.ReleaseDate.join(';') : 
+                    date: attributes.ReleaseDate ? attributes.ReleaseDate.join(';') :
                         (attributes.PublicationDate ? attributes.PublicationDate.join(';') : null)
                 });
             }
@@ -105,7 +106,7 @@ router.get("/amazon/music/:str", function(req, res, next){
 
 router.get("/amazon/game/:str", function(req, res, next){
     if(req.user){
-        client.itemSearch({ 
+        client.itemSearch({
             keywords: req.params.str,
             searchIndex: 'VideoGames'
         }).catch(function(err){
@@ -117,9 +118,9 @@ router.get("/amazon/game/:str", function(req, res, next){
                 result.push({
                     ASIN: results[r].ASIN ? results[r].ASIN.join(';') : null,
                     name: attributes.Title ? attributes.Title.join(';') : null,
-                    genre: attributes.Genre ? attributes.Genre.join(';') : 
+                    genre: attributes.Genre ? attributes.Genre.join(';') :
                         (attributes.HardwarePlatform ? attributes.HardwarePlatform.join(';') : null),
-                    date: attributes.ReleaseDate ? attributes.ReleaseDate.join(';') : 
+                    date: attributes.ReleaseDate ? attributes.ReleaseDate.join(';') :
                         (attributes.PublicationDate ? attributes.PublicationDate.join(';') : null)
                 });
             }
@@ -158,15 +159,10 @@ router.post("/create/:code/:codetype", function(req, res, next){
             return res.json(err);
         }).then(function(results){
             let attributes = results[0].ItemAttributes[0];
-            switch(attributes.Binding.join(';')){ 
+            console.log("\nthomaslog "  + attributes.Binding.join(';') + "\n");
+            switch(attributes.Binding.join(';')){
                 // all possibilities behind
-                case "Blu-ray":
-                case "DVD":
-                case "Audio CD":
-                case "CD":
-                case "Hardcover":    
-                case "Paperback":
-                case "Video Game":
+                default:
                     getJSON(attributes, req, function(){
                         return res.status(200).json({
                             result: 1,
@@ -179,11 +175,11 @@ router.post("/create/:code/:codetype", function(req, res, next){
                         })
                     });
                     break;
-                default: 
-                    return res.status(400).json({
-                        result: 0,
-                        message: "The item has been find but doesn't belong to the possible categories."
-                    });
+                // default:
+                //     return res.status(400).json({
+                //         result: 0,
+                //         message: "The item has been found but doesn't belong to the possible categories."
+                //     });
             }
         });
     }
@@ -191,19 +187,19 @@ router.post("/create/:code/:codetype", function(req, res, next){
 
 function getJSON(attributes, req, next, error){
     let type = attributes.Binding ? attributes.Binding.join(';') : null;
-    let date = attributes.ReleaseDate ? attributes.ReleaseDate.join(';') : 
-        (attributes.PublicationDate ? attributes.PublicationDate.join(';') : null); 
+    let date = attributes.ReleaseDate ? attributes.ReleaseDate.join(';') :
+        (attributes.PublicationDate ? attributes.PublicationDate.join(';') : null);
     let price = attributes.ListPrice ?
         (attributes.ListPrice[0].FormattedPrice ? attributes.ListPrice[0].FormattedPrice.join(';') : null) : null;
     let name = attributes.Title ? attributes.Title.join(';') + (attributes.OperatingSystem ? ';' + attributes.OperatingSystem.join(';') : "") : null;
-    let editor = attributes.Publisher ? attributes.Publisher.join(';') : 
+    let editor = attributes.Publisher ? attributes.Publisher.join(';') :
         (attributes.Label ? attributes.Label.join(';') : null);
     let genre = attributes.Genre ? attributes.Genre.join(';') : null;
     let actors = attributes.Actor ? attributes.Actor.join(';') : null;
-    let autor = attributes.Author ? attributes.Author.join(';') : 
-        (attributes.Artist ? attributes.Artist.join(';') : 
+    let autor = attributes.Author ? attributes.Author.join(';') :
+        (attributes.Artist ? attributes.Artist.join(';') :
         (attributes.Director ? attributes.Director.join(';') : null));
-    
+
     models.Product.create({
         type: type,
         bar_code: req.params.codetype + ';' + req.params.code,
@@ -286,7 +282,7 @@ router.get("/search/:id", function(req, res, next){
                 message: "ID not found."
             });
         }).catch(next);
-    }  
+    }
 })
 
 /******************************************

@@ -6,7 +6,7 @@ var isUnique = function(modelName, field) {
     query[field] = value;
     Model.find({where: query, attributes: ["id"]}).then(function(obj) {
       if (obj) {
-        next(field + ' "' + value + '" is already in use');
+        next(field + ' "' + value + '" is already used and must be unique');
       } else {
         next();
       }
