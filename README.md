@@ -1,9 +1,9 @@
 # librarize_me_webservice
 NodeJS webservice for the application "Librarize me"
 
-##Librarize.me webservices’ specifications
+## Librarize.me webservices’ specifications
 
-###Some words about tokens:
+### Some words about tokens:
 
 This API use Tokens to control the access of the different users.
 The idea is simple: when a user connect itself, the API send a unique Token that must be store somewhere on client-side.
@@ -146,13 +146,13 @@ Without it, the route won’t be accessible and the API will throw an error.
 
 	* modify database
 
-  add product to the library of active user →
-    POST
-    /products/create/:code/:barcodetype
+	add product to the library of active user →
+	    POST
+	    /products/create/:code/:barcodetype
 
-  delete product of the library of active user →
-    PUT
-    /products/delete/:productid
+	delete product of the library of active user →
+	    PUT
+	    /products/delete/:productid
 
 	* get informations from bdd
 	
@@ -176,35 +176,37 @@ Without it, the route won’t be accessible and the API will throw an error.
 	
 	* modify database
 
-  create a new loan →
-    POST
-    /loans/create/:code/:user_id { start_date, end_date }
-  end a loan →
-    POST
-    /loans/end/:code/:user_id { start_date, end_date }
-  delete a loan →
-    POST
-    /loans/delete/:code/:user_id { start_date }
+	create a new loan →
+	    POST
+	    /loans/create/:code/:user_id { start_date, end_date }
+	    
+	end a loan →
+	    POST
+	    /loans/end/:code/:user_id { start_date, end_date }
+	    
+	delete a loan →
+	    POST
+	    /loans/delete/:code/:user_id { start_date }
 
 	* get informations from bdd
 
-  get all loans →
-    GET
-    /loans/search/
-  get a loan →
-    GET
-    /loans/search/:id
-  get my loans (owner) →
-    GET
-    /loans/search/owner/active
-  get my loans (loaner) →
-    GET
-    /loans/search/loaner/active
-  get loans from a user (owner) →
-    GET
-    /loans/search/owner/:user_id
-  get loans from a user (loaner) →
-    GET
-    /loans//search/loaner/:user_id
+	get all loans →
+	    GET
+	    /loans/search/
+	get a loan →
+	    GET
+	    /loans/search/:id
+	get my loans (owner) →
+	    GET
+	    /loans/search/owner/active
+	get my loans (loaner) →
+	    GET
+	    /loans/search/loaner/active
+	get loans from a user (owner) →
+	    GET
+	    /loans/search/owner/:user_id
+	get loans from a user (loaner) →
+	    GET
+	    /loans//search/loaner/:user_id
 
 
