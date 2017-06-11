@@ -7,7 +7,7 @@ module.exports = function(sequelize, DataTypes) {
         allowNull: false
     }
    }, {
-  paranoid: true,
+  //paranoid: true,
   underscored: true,
   freezeTableName: true,
     classMethods: {

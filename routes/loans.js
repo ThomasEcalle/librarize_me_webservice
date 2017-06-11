@@ -110,7 +110,7 @@ router.post('/create/:code/:user_id', function(req, res, next){
                     {
                         user_id: req.user.id,
                         friend_id: req.params.user_id,
-                        deleted_at: null
+                        accepted: 1
                     }
                 }).catch(function(err){
                     return res.json(err);
