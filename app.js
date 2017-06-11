@@ -69,7 +69,7 @@ app.post("/users/connect", function(req,res,next){
         return res.status(200).send({
           "result": 1,
           "message": "Athentification is a success",
-          "expires in": "1 day",
+          "expires_in_seconds": 24 * 60  * 60,
           "token": token
         })
       }).catch(next);

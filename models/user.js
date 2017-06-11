@@ -26,7 +26,7 @@ module.exports = function(sequelize, DataTypes) {
        validate: {
          isEmail: {
            args: true,
-           msg: "Wrong email adress"
+           msg: "Not valid email adress"
          }
        }
      },

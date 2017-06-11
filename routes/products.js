@@ -218,7 +218,7 @@ function getJSON(attributes, req, next, error){
 *             Delete product              *
 *******************************************/
 
-router.put("/delete/:product_id", function(req, res, next){
+router.delete("/delete/:product_id", function(req, res, next){
     if(req.user){
         Product.destroy({
             where:

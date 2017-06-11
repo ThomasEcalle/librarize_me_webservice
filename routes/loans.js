@@ -12,7 +12,7 @@ const Loan = models.Loan;
 
 
 /******************************************
-*             Make a loan                 * 
+*             Make a loan                 *
 *******************************************/
 
 function checkDate(start, end, res, next){
@@ -70,7 +70,7 @@ router.post('/create/:code/:user_id', function(req, res, next){
         let start = req.body.start_date ? new Date(req.body.start_date) : new Date();
         let end = req.body.end_date ? new Date(req.body.end_date) : null;
         checkDate(start, end, res, function(){
-        
+
             /* VERIFICATION IF THE USER ID IS NOT YOURSELF */
             if(req.params.user_id == req.user.id){
                 return res.status(400).json({
@@ -161,7 +161,7 @@ router.post('/create/:code/:user_id', function(req, res, next){
 })
 
 /******************************************
-*        Declare end of a loan            * 
+*        Declare end of a loan            *
 *******************************************/
 
 router.post('/end/:code/:user_id', function(req, res, next){
@@ -189,7 +189,7 @@ router.post('/end/:code/:user_id', function(req, res, next){
                 user_id: req.params.user_id,
                 start_date: start,
                 end_date: null,
-                deleted_at: null   
+                deleted_at: null
             }
         }).catch(function(err){
             return res.json(err);
@@ -240,10 +240,10 @@ router.post('/end/:code/:user_id', function(req, res, next){
 })
 
 /******************************************
-*             Delete a loan               * 
+*             Delete a loan               *
 *******************************************/
 
-router.post('/delete/:code/:user_id', function(req, res, next){
+router.delete('/delete/:code/:user_id', function(req, res, next){
     if(req.user){
         let start = req.body.start_date ? new Date(req.body.start_date) : null;
         if(!start || start.toString() == "Invalid Date"){
@@ -285,7 +285,7 @@ router.post('/delete/:code/:user_id', function(req, res, next){
                 }
                 else{
                     Loan.destroy({
-                        where: 
+                        where:
                         {
                             product_id: req.params.code,
                             user_id: req.params.user_id,
@@ -350,7 +350,7 @@ router.get("/search/:id", function(req, res, next){
                 message: "ID not found."
             });
         }).catch(next);
-    }  
+    }
 })
 
 /******************************************

@@ -62,6 +62,7 @@ router.get("/:user_id", function(req,res,next){
     }
     res.status(200)
     return res.json({
+      "result": 0,
       "message": "No user found"
     });
   }).catch(next)
@@ -322,6 +323,41 @@ router.get("/friends/all", function(req, res, next){
     // }).catch(next);
 
   }
+})
+
+/******************************************
+*               Remove Friend             *
+*******************************************/
+router.delete("/friends/remove/:friend_id", function(req,res,next){
+  if (req.user){
+    let user = req.user;
+    let friend_id = req.params.friend_id
+    Friendship.find({
+      where: {
+        $or: [{friend_id: user.id,
+                $and: {user_id: friend_id} }
+            , {user_id: user.id,
+                $and: {friend_id: friend_id}}],
+        $and: {accepted: 1}
+      }
+    }).then(function(relation){
+      if (relation){
+        return relation.destroy({where: {}}).then(function(){
+          res.json({
+            result: 1,
+            message: "Friendship correctly removed"
+          })
+        }).catch(next)
+      }
+      else{
+        return res.status(400).json({
+          result: 0,
+          message: "Users are not friends"
+        })
+      }
+    }).catch(next)
+  }
+
 })
 
 module.exports = router;
