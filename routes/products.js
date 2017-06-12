@@ -9,8 +9,8 @@ const User = models.User;
 const Product = models.Product;
 const Friendship = models.Friendship;
 const client = amazon.createClient({
-  awsId: "AKIAIWPUBWY7U6ZRQDEA",
-  awsSecret: "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",
+  awsId: "",
+  awsSecret: "",,
   awsTag: "node02-20"
 });
 
